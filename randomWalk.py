@@ -42,4 +42,3 @@ def requestOneFinal (depart , budget , date , country = 'CH' , currency =  'CHF'
 
 
 
-print(randomStep('gva',29,'2017-11-20'))
