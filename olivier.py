@@ -19,29 +19,27 @@ def find_arrival(from_code, to_code, outboundDate, cabinclass="Economy", inboudD
 #     print(datadict)
     polling = requests.post("{}/pricing/v1.0".format(endpoint), data=datadict) #session creation
     if(polling.status_code != 201):
-        return "ERROR POST: error " + str(polling.status_code)
+        return "ERROR"
 
     print('giuhjioji     ',polling.status_code)
     poll_address = polling.headers['Location']
     data = requests.get("{}?apikey={}&sortType=price&sortOrder=asc".format(poll_address,token))
 
-    # print(data)
     while(data.status_code  !=  200  or data.json()['Status'] == "UpdatesPending"):
         print("Waiting...")
         time.sleep(1)
         data = requests.get("{}?apikey={}&sortType=price&sortOrder=asc".format(poll_address,token))
 
 
-    results = []
-    print(data.json())
-    for itin in data.json()['Itineraries'][:4]:
+    results = [] #list of dics
+    for itin in data.json()['Itineraries'][:min(4, len(data.json()['Itineraries']))]:
         dico={}
         outboundLegId = itin['OutboundLegId']
         for leg in data.json()['Legs']:
             if(leg['Id'] == outboundLegId):
                 dico['ArrivalTime']=leg['Arrival']
                 dico['DepartureTime']=leg['Departure']
-                break
+                break #no more match with be found in the Leg
         dico['DeepLink']=itin['PricingOptions'][0]['DeeplinkUrl']
         dico['Price'] = itin['PricingOptions'][0]['Price']
         dico['CodeBeginning'] = from_code
