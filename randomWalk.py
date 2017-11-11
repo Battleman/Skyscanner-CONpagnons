@@ -29,10 +29,18 @@ def randomStep (depart , budget , date , country = 'CH' , currency =  'CHF', loc
     for place in rjson["Places"] :
         if (place['PlaceId'] == arrived) :
             goodTrip['arrived'] = place
-            break
+       
 
     goodTrip['arrivalTime'] = str(goodTrip['OutboundLeg']['DepartureDate'])
-    return True , find_arrival(depart , goodTrip['arrived']['IataCode'], date)
+
+
+    res = find_arrival(depart , goodTrip['arrived']['IataCode'], date)
+
+    for elem in res :
+
+        elem['nameEnding'] = goodTrip['arrived']['CityName']
+
+    return True , res
 
 #[{'name' : goodTrip['arrived']['Name'] ,
  #   'code' :  goodTrip['arrived']['SkyscannerCode'],
@@ -65,7 +73,6 @@ def randomWalk (depart , budget , date , country = 'CH' , currency =  'CHF', loc
 
 
             if (keepGoing) :
-                # print(tryStepList)
                 tryStep = tryStepList[0]
                 position = tryStep['CodeEnding']
                 currentBudget -= tryStep['Price']
@@ -76,4 +83,4 @@ def randomWalk (depart , budget , date , country = 'CH' , currency =  'CHF', loc
     return res
 
 
-# print(randomWalk('TIA', 500, '2017-12-12'))
+print(randomWalk('TIA', 500, '2017-12-12'))

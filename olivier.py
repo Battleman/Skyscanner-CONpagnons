@@ -33,7 +33,6 @@ def find_arrival(from_code, to_code, outboundDate, cabinclass="Economy", inboudD
 
 
     results = []
-    print(data.json())
     for itin in data.json()['Itineraries'][:4]:
         dico={}
         outboundLegId = itin['OutboundLegId']
