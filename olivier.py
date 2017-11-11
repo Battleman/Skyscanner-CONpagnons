@@ -20,11 +20,17 @@ def find_arrival(from_code, to_code, outboundDate, cabinclass="Economy", inboudD
     polling = requests.post("{}/pricing/v1.0".format(endpoint), data=datadict) #session creation
     if(polling.status_code != 201):
         return "ERROR POST: error " + str(polling.status_code)
+
+    print('giuhjioji     ',polling.status_code)
     poll_address = polling.headers['Location']
     data = requests.get("{}?apikey={}&sortType=price&sortOrder=asc".format(poll_address,token))
-    while(data.json() == None or data.json()['Status'] == 'UpdatePending'):
+   
+    print(data)
+    while(data.status_code  !=  200  ):
         print("Waiting...")
         time.sleep(1)
+        data = requests.get("{}?apikey={}&sortType=price&sortOrder=asc".format(poll_address,token))
+   
 
     results = []
     for itin in data.json()['Itineraries'][:4]:
