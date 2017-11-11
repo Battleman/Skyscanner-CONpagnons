@@ -1,6 +1,7 @@
 <!doctype html>
 <html lang="en">
   <head>
+      <script src="jquery-3.2.1.min.js"></script>
     <title>Hello, world!</title>
     <!-- Required meta tags -->
     <meta charset="utf-8">
@@ -12,14 +13,29 @@
   <body>
     <h1>Hello, world!</h1>
     <br>
-    <form action="www.google.com" method="get">
-        <input type="text" id="from" placeholder="from"><br>
+    <!-- <form action="action.php" method="post">
+        <input type="text" name="from" placeholder="from"><br>
         <input type="text" placeholder="to"><br>
         <input type="text" placeholder="departure date"><br>
         <input type="text" placeholder="arrival date"><br>
         <input type="submit">
+    </form> -->
 
-    </form>
+ <script>
+ var myError
+let req = $.ajax({
+    url: 'http://partners.api.skyscanne.net/apiservices/browsequotes/v1.0/CH/CHF/en-GB/zrh/nrt/2017-11/2017-11',
+    type: 'GET',
+    data: 'apiKey=ha712564909427747796218296388326',
+    success: (data) => console.log("Done fetching"),
+    error: (err) => console.error("Could not fetch")
+})
+req.done((data) => console.log("I'm done"))
+req.fail((data, text, error) => myError  = data)
+</script>
+
+    <!-- Welcome <?php echo $_GET["http://partners.api.skyscanner.net/apiservices/browsequotes/v1.0/CH/CHF/en-GB/zrh/nrt/2017-11/2017-11?apiKey=ha712564909427747796218296388326"]; ?><br> -->
+
     <!-- Optional JavaScript -->
     <!-- jQuery first, then Popper.js, then Bootstrap JS -->
     <script src="https://code.jquery.com/jquery-3.2.1.slim.min.js" integrity="sha384-KJ3o2DKtIkvYIK3UENzmM7KCkRr/rE9/Qpg6aAZGJwFDMVNA/GpGFF93hXpG5KkN" crossorigin="anonymous"></script>
