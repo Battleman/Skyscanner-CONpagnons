@@ -1,6 +1,6 @@
 import requests
 import time
-
+import sys
 def suggest_airport(airport, locale="en-GB", currency="chf", country="ch"):
     endpoint = 'http://partners.api.skyscanner.net/apiservices'
     token= 'ha712564909427747796218296388326'
@@ -21,12 +21,13 @@ def find_arrival(from_code, to_code, outboundDate, cabinclass="Economy", inboudD
     if(polling.status_code != 201):
         return "ERROR"
 
-    print('giuhjioji     ',polling.status_code)
     poll_address = polling.headers['Location']
     data = requests.get("{}?apikey={}&sortType=price&sortOrder=asc".format(poll_address,token))
-
+    waitstring = "Waiting"
     while(data.status_code  !=  200  or data.json()['Status'] == "UpdatesPending"):
-        print("Waiting...")
+        waitstring += "."
+        print(waitstring, end='\r')
+        sys.stdout.flush()
         time.sleep(1)
         data = requests.get("{}?apikey={}&sortType=price&sortOrder=asc".format(poll_address,token))
 
