@@ -1,0 +1,24 @@
+<!DOCTYPE html>
+<html>
+<head></head>
+<body>
+<div id=c>
+<input type=color id=cancer v-model=col v-on:input=change>
+<span>{{ num }}</span>
+</div>
+
+<script src="https://unpkg.com/vue"></script>
+<script>
+let data = { col: null, num: null }
+let methods = {
+  change: function (event) {
+	a = parseInt(this.col.substr(1, 2), 16)
+	b = parseInt(this.col.substr(3, 2), 16)
+	c = parseInt(this.col.substr(5, 2), 16)
+    this.num = "" + a + "-" + b + "-" + c
+  }
+}
+let vm = new Vue({ data: data, el: '#c', methods: methods })
+</script>
+</body>
+</html>
