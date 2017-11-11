@@ -28,10 +28,18 @@ def randomStep (depart , budget , date , country = 'CH' , currency =  'CHF', loc
     for place in rjson["Places"] :
         if (place['PlaceId'] == arrived) :
             goodTrip['arrived'] = place
-            break
+       
 
     goodTrip['arrivalTime'] = str(goodTrip['OutboundLeg']['DepartureDate'])
-    return True , find_arrival(depart , goodTrip['arrived']['IataCode'], date)
+
+
+    res = find_arrival(depart , goodTrip['arrived']['IataCode'], date)
+
+    for elem in res :
+
+        elem['nameEnding'] = goodTrip['arrived']['CityName']
+
+    return True , res
 
 #[{'name' : goodTrip['arrived']['Name'] ,
  #   'code' :  goodTrip['arrived']['SkyscannerCode'],
