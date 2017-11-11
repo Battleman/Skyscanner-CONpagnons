@@ -7,21 +7,19 @@ from olivier import find_arrival
 def randomStep (depart , budget , date , country = 'CH' , currency =  'CHF', locale = 'en-GB' ) :
 
     url = 'http://partners.api.skyscanner.net/apiservices/browsequotes/v1.0/'+str(country)+'/'+str(currency)+'/'+str(locale)+'/'+str(depart)+'/anywhere/'+str(date)+'/?apiKey=ha712564909427747796218296388326'
-    
 
     r = requests.get(url)
     rjson = r.json()
 
-
     trips = rjson['Quotes']
-    price = budget + 1 
+    price = budget + 1
     count = 0
     maxIter = len(trips)*5
 
     while (price > budget ) :
         goodTrip = (trips[randrange(len(trips))])
         price = goodTrip['MinPrice']
-        count += 1 
+        count += 1
         if ( count > maxIter) :
             #print('error')
             return False ,[]
@@ -35,7 +33,7 @@ def randomStep (depart , budget , date , country = 'CH' , currency =  'CHF', loc
 
     goodTrip['arrivalTime'] = str(goodTrip['OutboundLeg']['DepartureDate'])
     return True , find_arrival(depart , goodTrip['arrived']['IataCode'], date)
-    
+
 #[{'name' : goodTrip['arrived']['Name'] ,
  #   'code' :  goodTrip['arrived']['SkyscannerCode'],
   #  'price' : goodTrip['MinPrice'],
@@ -54,7 +52,7 @@ def randomWalk (depart , budget , date , country = 'CH' , currency =  'CHF', loc
     keepGoing = True
     res = []
     while (keepGoing) :
-        
+
         keepGoing = False
         count = 0
         notSoGood = []
@@ -63,18 +61,19 @@ def randomWalk (depart , budget , date , country = 'CH' , currency =  'CHF', loc
             count += 1
 
             (keepGoing , tryStepList) =  randomStep (position , currentBudget , currentDate , country  , currency , locale  )
-            
-            
+
+
 
             if (keepGoing) :
+                # print(tryStepList)
                 tryStep = tryStepList[0]
                 position = tryStep['CodeEnding']
                 currentBudget -= tryStep['Price']
                 currentDate = tryStep['ArrivalTime'][:10]
-            
+
                 res += [tryStep]
 
     return res
-                
 
 
+# print(randomWalk('TIA', 500, '2017-12-12'))

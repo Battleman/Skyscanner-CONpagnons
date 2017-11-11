@@ -24,15 +24,16 @@ def find_arrival(from_code, to_code, outboundDate, cabinclass="Economy", inboudD
     print('giuhjioji     ',polling.status_code)
     poll_address = polling.headers['Location']
     data = requests.get("{}?apikey={}&sortType=price&sortOrder=asc".format(poll_address,token))
-   
-    print(data)
-    while(data.status_code  !=  200  ):
+
+    # print(data)
+    while(data.status_code  !=  200  or data.json()['Status'] == "UpdatesPending"):
         print("Waiting...")
         time.sleep(1)
         data = requests.get("{}?apikey={}&sortType=price&sortOrder=asc".format(poll_address,token))
-   
+
 
     results = []
+    print(data.json())
     for itin in data.json()['Itineraries'][:4]:
         dico={}
         outboundLegId = itin['OutboundLegId']
