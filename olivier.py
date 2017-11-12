@@ -23,6 +23,7 @@ def find_arrival(from_code, to_code, outboundDate, cabinclass="Economy", inboudD
     poll_address = polling.headers['Location']
     data = requests.get("{}?apikey={}&sortType=price&sortOrder=asc".format(poll_address,token))
     waitstring = "Waiting"
+    print("Doing a request, have code ", data.status_code)
     while(data.status_code  !=  200  or data.json()['Status'] == "UpdatesPending"):
         waitstring += "."
         print(waitstring, end='\r')
