@@ -42,7 +42,7 @@
       </div>
 
       <div class="row mt-2" v-if="cities.length > 0">
-        <h2>You should go to {{ "{{ cities[0] }}" }}!</h2>
+        <h2>You should go to {{ "{{ bestCity }}" }}!</h2>
       </div>
 
       <div v-if="form.pictureURL" class="row mt-2">
@@ -87,6 +87,7 @@
 
       let computed = {
         today: () => new Date().toISOString().split('T')[0],
+        bestCity: function () { return this.cities[ Math.floor( Math.random() * this.cities.length ) ] },
         cities: function () {
           return this.destinations.map((d) => d[0])
         }

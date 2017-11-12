@@ -1,5 +1,5 @@
 from olivier import suggest_airport
-from cities import select_best_cities_fixed
+from cities import get_most_likely_cities_file
 from randomWalk import randomWalk
 
 from flask import Flask, request, render_template, jsonify
@@ -15,7 +15,7 @@ def fromPicture():
 
 @app.route('/goPicture', methods = ['POST'])
 def fromPictureURL():
-    return jsonify(select_best_cities_fixed(request.form['pictureURL'], 4))
+    return jsonify(get_most_likely_cities_file(request.form['pictureURL'], 5))
 
 @app.route('/suggestAirport/<needle>')
 def suggestAirport(needle):
