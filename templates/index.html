@@ -41,16 +41,16 @@
           <label class="sr-only" for="from-date">From:</label>
           <input type="date" v-model="form.fromDate" v-bind:min="today" class="form-control mr-2" id="from-date" placeholder="From" required>
 
+          <!--
           <label class="sr-only" for="to-date">To:</label>
           <input type="date" v-model="form.toDate" v-bind:min="form.fromDate" class="form-control mr-2" id="to-date" placeholder="To" required>
+          -->
 
-          <!--
           <label class="sr-only" for="escale-length">Escale length</label>
           <div class="input-group mr-2 col-2" style="padding:0">
             <input type="number" min="2" v-model="form.escaleLength" class="form-control" id="escale-length" placeholder="Escale length" required>
             <div class="input-group-addon">Days</div>
           </div>
-          -->
 
           <!--
           <label class="sr-only" for="to-date">From:</label>
@@ -76,7 +76,7 @@
           <thead>
             <tr>
               <th>City</th>
-              <th>Arrival time</th>
+              <th>Arrival date</th>
               <th>Price</th>
               <th></th>
             </tr>
@@ -84,9 +84,9 @@
           <tbody>
             <tr v-for="stop in stops">
               <td>{{ "{{ stop.NameEnding }}" }}</td>
-              <td>{{ "{{ stop.ArrivalTime.replace('T', ' at ') }}" }}</td>
+              <td>{{ "{{ stop.ArrivalDate }}" }}</td>
               <td>{{ "{{ stop.Price }}" }}&nbsp;CHF</td>
-              <td><a target="_blank" v-bind:href="stop.DeepLink">Book it!</a></td>
+              <td><a target="_blank" v-if="stop.DeepLink" v-bind:href="stop.DeepLink">Book it!</a></td>
             </tr>
             <tr>
               <td></td>
@@ -97,6 +97,14 @@
           </tbody>
         </table>
       </div>
+
+      <div class="row" v-if="stops.length > 0">
+        <button type="button" v-on:click="likeIt" class="btn btn-success">I like it!</button>
+        <button type="button" v-on:click="submitForm" class="btn btn-danger">No, drop it :(</button>
+      </div>
+
+      <div class="clearfix"></div>
+
       <div class="row">
         <div id="map" class="col-12"></div>
       </div>
@@ -122,7 +130,7 @@
           startAirport: null,
           budget: null,
           fromDate: null,
-          toDate: null,
+          /* toDate: null, */
           escaleLength: 2
         },
         stops: []
@@ -151,7 +159,7 @@
           if (airport == null) return
 
           let f = this.form
-          let url = '/walk/' + [airport, f.budget, f.fromDate, f.toDate, f.escaleLength].join('/')
+          let url = '/walk/' + [airport, f.budget, f.fromDate, /*f.toDate, */f.escaleLength].join('/')
           $.getJSON(url)
            .done((data) => {
              if (data.length == 0) {
@@ -165,6 +173,18 @@
 
           this.stops = []
           this.alert = null
+          this.loading = true
+        },
+        likeIt: function (event) {
+          console.log(this.stops)
+          $.post({
+            url: '/heavyWalk',
+            contentType: 'application/json',
+            data: JSON.stringify(this.stops)
+          })
+           .done((data) => this.stops = data)
+           .always(() => this.loading = false)
+
           this.loading = true
         }
       }
@@ -195,8 +215,6 @@
         stops: function (newStops) {
           coordList = []
 
-          console.log("new stops")
-          
           var stops = data.stops;
 
           var htmlFirst = 'https://maps.googleapis.com/maps/api/geocode/json?address='+data['form']['startAirport'].replace(' ','+')+'&key=AIzaSyBtclAh5sBEWXlB0iWhprHqVCVlmmQeGDQ';
@@ -221,7 +239,7 @@
 
       let vm = new Vue({ el: '#container', data: data, watch: watch, computed: computed, methods: methods })
 
-      setInterval(() => vm.globeIndex++, 800)
+      setInterval(() => vm.globeIndex++, 700)
     </script>
 
 
