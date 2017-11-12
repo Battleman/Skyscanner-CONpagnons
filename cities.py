@@ -80,6 +80,8 @@ json_data = requests.get('http://partners.api.skyscanner.net/apiservices/geo/v1.
 
 parsed = json.loads(json_data.text)
 
+cont = parsed['Continents']
+
 city_dict = {}
 for continent in cont:
     for countries in continent['Countries']:
