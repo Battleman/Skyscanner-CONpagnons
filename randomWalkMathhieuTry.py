@@ -2,30 +2,30 @@ import requests
 import json
 from random import randrange
 from olivier import find_arrival
+import datetime
 
 
 def chooseDestination (depart , budget , date  , country = 'CH' , currency =  'CHF', locale = 'en-GB' , destination = 'anywhere' ) :
     url = 'http://partners.api.skyscanner.net/apiservices/browsequotes/v1.0/'+str(country)+'/'+str(currency)+'/'+str(locale)+'/'+str(depart)+'/'+str(destination)+'/'+str(date)+'/?apiKey=ha712564909427747796218296388326'
 
-    print(url)
 
     r = requests.get(url)
     rjson = r.json()
 
     trips = rjson['Quotes']
+    #print(trips)
     if(trips == []) :
         return False , []
     price = budget + 1
     count = 0
     maxIter = len(trips)*5
     
-    print(trips)
 
     while (price > budget ) :
         goodTrip = (trips[randrange(len(trips))])
         price = goodTrip['MinPrice']
         count += 1
-        if ( count > maxIter) :
+        if ( count > maxIter ) :
             #print('error')
             return False ,[]
 
@@ -39,13 +39,20 @@ def chooseDestination (depart , budget , date  , country = 'CH' , currency =  'C
     goodTrip['arrivalTime'] = str(goodTrip['OutboundLeg']['DepartureDate'])
     return True ,goodTrip
 
+def dateIncrease(date, increase):
+    date = datetime.date(int(date[0:4]), int(date[5:7]), int(date[8:]))
+    date += datetime.timedelta(increase)
+    return date.strftime("%Y-%m-%d")
+
 def randomStep (depart , budget , date , country = 'CH' , currency =  'CHF', locale = 'en-GB' ) :
 
     (keepGoing , goodTrip) = chooseDestination(depart , budget , date , country = 'CH' , currency =  'CHF', locale = 'en-GB' )
-    print(goodTrip)
-    print(chooseDestination(depart , budget , date , country = 'CH' , currency =  'CHF', locale = 'en-GB' , destination = goodTrip['arrived']['IataCode']))
 
-    return True , find_arrival(depart , goodTrip['arrived']['IataCode'], date)
+    if (keepGoing) :
+
+        return True , find_arrival(depart , goodTrip['arrived']['IataCode'], date)
+    else :
+        return False , []
 
 #[{'name' : goodTrip['arrived']['Name'] ,
  #   'code' :  goodTrip['arrived']['SkyscannerCode'],
@@ -58,7 +65,7 @@ def randomStep (depart , budget , date , country = 'CH' , currency =  'CHF', loc
 def requestOneFinal (depart , budget , date , country = 'CH' , currency =  'CHF', locale = 'en-GB' ) :
     (finished , json) = randomStep(depart , budget , date)
 
-def randomWalk (depart , budget , date , country = 'CH' , currency =  'CHF', locale = 'en-GB' ) :
+def randomWalk (depart , budget , date , country = 'CH' , currency =  'CHF', locale = 'en-GB' , dayspercity=2) :
     currentBudget = budget
     position = depart
     currentDate = date
@@ -74,29 +81,39 @@ def randomWalk (depart , budget , date , country = 'CH' , currency =  'CHF', loc
         while ((not keepGoing) and count < 15) :
             count += 1
 
-            print(position , currentBudget , currentDate , country  , currency , locale  )
 
-
+            #print(count , "count" , len(res))
             (keepGoing , tryStepList) =  randomStep (position , currentBudget , currentDate , country  , currency , locale  )
 
 
-            #print(keepGoing , tryStepList)
             if (keepGoing) :
-                count = 0
-                # print(tryStepList)
                 tryStep = tryStepList[0]
-                #print('oulaoulala lal oulala    ',position , currentBudget , currentDate , country  , currency , locale , depart )
-                #(canGoBack , toHome) =  chooseDestination (tryStep['CodeEnding'] , currentBudget , currentDate , country  , currency , locale , depart )
+                
+                position = tryStep['CodeEnding']
+                currentBudget -= tryStep['Price']
+                currentDate = dateIncrease(tryStep['ArrivalTime'][:10], dayspercity)
 
-                if (True) :
-                    #previousHome = toHome 
-                    position = tryStep['CodeEnding']
-                    currentBudget -= tryStep['Price']
-                    currentDate = tryStep['ArrivalTime'][:10]
+                res += [tryStep]
+    
+    canGoHome  = False
 
-                    res += [tryStep]
-                #else :
-                 #   res += [previousHome]
+    while (not canGoHome) :
+        (canGoHome , goHome)  = chooseDestination (position , currentBudget , currentDate , country  , currency , locale , depart ) 
+        if ( canGoHome) :
+            goHome = find_arrival(position , depart , currentDate)[0]
+            if ( currentBudget < goHome['Price'] ) :
+                canGoHome = False
+            else :
+                res += [goHome]
+        
+        print(canGoHome , not canGoHome)
+
+        if (not canGoHome) :
+            print(res[-1])
+            position = res[-1]['CodeBeginning']
+            currentBudget += res[-1]['Price']
+            res = res [ : -1]
+        
 
     return res
 
