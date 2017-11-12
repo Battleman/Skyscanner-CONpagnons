@@ -41,12 +41,14 @@ def find_arrival(from_code, to_code, outboundDate, cabinclass="Economy", inboudD
         outboundLegId = itin['OutboundLegId']
         for leg in data.json()['Legs']:
             if(leg['Id'] == outboundLegId):
-                dico['ArrivalTime']=leg['Arrival']
+                dico['ArrivalDate']=leg['Arrival']
                 dico['DepartureTime']=leg['Departure']
                 break #no more match with be found in the Leg
         dico['DeepLink']=itin['PricingOptions'][0]['DeeplinkUrl']
         dico['Price'] = itin['PricingOptions'][0]['Price']
         dico['CodeBeginning'] = from_code
         dico['CodeEnding'] = to_code
+        # print("ITIN IS", itin)
+        # dico['NameEnding'] =
         results += [dico]
     return results

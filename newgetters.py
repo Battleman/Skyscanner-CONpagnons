@@ -101,17 +101,18 @@ def heavy_getter(vols, country = 'CH' , currency =  'CHF', locale = 'en-GB', day
     for v in vols:
         print("\n\n",v)
         travel=find_arrival(v['CodeBeginning'], v['CodeArrival'], v['DepartureDate'])
+        travel['NameEnding'] = v['NameEnding']
         longlist += [travel]
     return longlist
 
-# if __name__ == '__main__':
-#     dest = []
-#     while(True):
-#         dest = fast_getter("GVA", 400, "2017-12-20",marge=0.1)
-#         if(dest == []):
-#             print("I FAILED !! I AM NOT ROOT !! i will come back...")
-#         else:
-#             print(dest)
-#             break
-#     print("Now confirming, with heavy...")
-#     # print("\n".join(heavy_getter(dest)))
+if __name__ == '__main__':
+    dest = []
+    while(True):
+        dest = fast_getter("GVA", 400, "2017-12-20",marge=0.1)
+        if(dest == []):
+            print("I FAILED !! I AM NOT ROOT !! i will come back...")
+        else:
+            print(dest)
+            break
+    print("Now confirming, with heavy...")
+    print("\n".join(heavy_getter(dest)))
