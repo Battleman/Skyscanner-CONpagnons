@@ -21,7 +21,7 @@
   <body>
     <div class="container" id="container">
       <div class="row">
-        <h1>Start a new journey</h1>
+        <h1>Start a new journey <span v-if="loading">{{ "{{ globe }}" }}</span></h1>
       </div>
 
       <div class="row">
@@ -44,11 +44,13 @@
           <label class="sr-only" for="to-date">To:</label>
           <input type="date" v-model="form.toDate" v-bind:min="form.fromDate" class="form-control mr-2" id="to-date" placeholder="To" required>
 
+          <!--
           <label class="sr-only" for="escale-length">Escale length</label>
           <div class="input-group mr-2 col-2" style="padding:0">
             <input type="number" min="2" v-model="form.escaleLength" class="form-control" id="escale-length" placeholder="Escale length" required>
             <div class="input-group-addon">Days</div>
           </div>
+          -->
 
           <!--
           <label class="sr-only" for="to-date">From:</label>
@@ -56,8 +58,10 @@
           -->
 
           <button type="submit" class="btn btn-primary">
+            <!--
             <i class="fa fa-circle-o-notch fa-spin fa-fw" v-if="loading"></i>
             <span class="sr-only">Loading...</span>
+            -->
             Submit
           </button>
         </form>
@@ -109,6 +113,8 @@
 
     <script>
       let data = {
+        globeIndex: 0,
+        globes: [ '🌎', '🌍', '🌏' ],
         alert: null,
         loading: false,
         airportSuggestions: [],
@@ -167,6 +173,7 @@
         totalPrice: function () {
           return this.stops.reduce((acc, stop) => acc + parseFloat(stop.Price), 0.0).toFixed(2)
         },
+        globe: function () { return this.globes[ this.globeIndex % 3 ] },
         today: function () { return new Date().toISOString().split('T')[0] }
       }
 
@@ -213,6 +220,8 @@
       }
 
       let vm = new Vue({ el: '#container', data: data, watch: watch, computed: computed, methods: methods })
+
+      setInterval(() => vm.globeIndex++, 800)
     </script>
 
 
