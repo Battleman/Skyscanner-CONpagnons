@@ -1,6 +1,6 @@
 import requests
 import time
-import sys
+from sys import stdout
 def suggest_airport(airport, locale="en-GB", currency="chf", country="ch"):
     endpoint = 'http://partners.api.skyscanner.net/apiservices'
     token= 'ha712564909427747796218296388326'
@@ -16,7 +16,6 @@ def find_arrival(from_code, to_code, outboundDate, cabinclass="Economy", inboudD
     token= 'ha712564909427747796218296388326'
     datadict={"cabinclass":cabinclass,"country":country,"currency":currency,"locale":locale,"originPlace":from_code,"locationSchema":"Iata",
           "destinationPlace":to_code,"outbounddate":outboundDate,"inbounddate":inboudDate,"adults":str(adults),"children":str(children),"infants":str(infants), "apikey":"ha712564909427747796218296388326"}
-#     print(datadict)
     polling = requests.post("{}/pricing/v1.0".format(endpoint), data=datadict) #session creation
     if(polling.status_code != 201):
         return "ERROR"
@@ -24,13 +23,13 @@ def find_arrival(from_code, to_code, outboundDate, cabinclass="Economy", inboudD
     poll_address = polling.headers['Location']
     data = requests.get("{}?apikey={}&sortType=price&sortOrder=asc".format(poll_address,token))
     waitstring = "Waiting"
+    print("Doing a request, have code ", data.status_code)
     while(data.status_code  !=  200  or data.json()['Status'] == "UpdatesPending"):
         waitstring += "."
         print(waitstring, end='\r')
-        sys.stdout.flush()
+        stdout.flush()
         time.sleep(1)
         data = requests.get("{}?apikey={}&sortType=price&sortOrder=asc".format(poll_address,token))
-
 
     results = [] #list of dics
     for itin in data.json()['Itineraries'][:min(4, len(data.json()['Itineraries']))]:
