@@ -127,7 +127,7 @@ def randomWalk (depart , budget , dateBegin , dateEnd , dayspercity=2 , country 
     
 
     while (not canGoHome) :
-        currentDate = res[-1]['ArrivalTime'][:10]
+        currentDate = dateIncrease(res[-1]['ArrivalTime'][:10],dayspercity)
         (canGoHome , goHomeCache)  = chooseDestination (position , currentBudget , currentDate, dateEnd, dayspercity , country  , currency , locale , depart )
         if ( canGoHome) :
             goHome = find_arrival(position , depart , currentDate)[0]
