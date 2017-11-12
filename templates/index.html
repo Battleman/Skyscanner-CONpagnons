@@ -60,11 +60,11 @@
         </form>
       </div>
 
-      <div class="alert alert-danger row" role="alert" v-if="alert">
+      <div class="alert alert-danger row mt-2" role="alert" v-if="alert">
         {{ "{{ alert }}" }}
       </div>
 
-      <div class="row">
+      <div class="row mt-2">
         <table class="col-8" v-if="stops.length > 0">
           <thead>
             <tr>
@@ -149,6 +149,7 @@
            })
            .always(() => this.loading = false)
 
+          this.stops = []
           this.alert = null
           this.loading = true
         }
