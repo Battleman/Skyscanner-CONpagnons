@@ -103,7 +103,7 @@ def heavy_getter(vols, country = 'CH' , currency =  'CHF', locale = 'en-GB', day
         travel=find_arrival(v['CodeBeginning'], v['CodeArrival'], v['DepartureDate'])
         t = travel[0]
         t['NameEnding'] = v['NameEnding']
-        longlist += t
+        longlist.append(t)
     return longlist
 
 if __name__ == '__main__':
