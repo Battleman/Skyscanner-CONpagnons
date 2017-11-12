@@ -85,7 +85,7 @@
           <tbody>
             <tr v-for="stop in stops">
               <td>{{ "{{ stop.NameEnding }}" }}</td>
-              <td>{{ "{{ stop.DepartureDate.replace('T', ' at ') }}" }}</td>
+              <td>{{ "{{ (stop['DepartureDate'] ? stop['DepartureDate'] : stop['DepartureTime']).replace('T', ' at ') }}" }}</td>
               <td>{{ "{{ stop.ArrivalDate.replace('T', ' at ') }}" }}</td>
               <td>{{ "{{ stop.Price }}" }}&nbsp;CHF</td>
               <td><a target="_blank" v-if="stop.DeepLink" v-bind:href="stop.DeepLink">Book it!</a></td>
