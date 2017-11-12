@@ -13,9 +13,11 @@
       tbody > tr:last-child { font-style: italic; }
       th:nth-child(3), td:nth-child(3) { text-align: right; }
       th:nth-child(4), td:nth-child(4) { text-align: center; }
-      #map {
-        height: 500px;
+
+    #map {
+        height: 600px;
       }
+
     </style>
   </head>
   <body>
@@ -93,9 +95,6 @@
           </tbody>
         </table>
       </div>
-      <div class="row">
-        <div id="map" class="col-12"></div>
-      </div>
     </div>
 
     
@@ -170,60 +169,18 @@
         today: function () { return new Date().toISOString().split('T')[0] }
       }
 
-      function httpGet(theUrl)
-      {
-      var xmlHttp = new XMLHttpRequest();
-      xmlHttp.open( "GET", theUrl, false ); // false for synchronous request
-      xmlHttp.send( null );
-      return xmlHttp.responseText;
-    }
-
-    
-    var coordList = [];
-    var originPos = {lat: 0, lng: 0};
-
-
-      let watch = {
-      // whenever question changes, this function will run
-        stops: function (newStops) {
-          coordList = []
-
-          console.log("new stops")
-          
-          var stops = data.stops;
-
-          var htmlFirst = 'https://maps.googleapis.com/maps/api/geocode/json?address='+data['form']['startAirport'].replace(' ','+')+'&key=AIzaSyBtclAh5sBEWXlB0iWhprHqVCVlmmQeGDQ';
-          var last = JSON.parse(httpGet(htmlFirst))['results'][0]['geometry']['location'];
-          originPos = last;
-          var arrayLength = stops.length;
-          for (var i = 0; i < arrayLength; i++) {
-            var html = 'https://maps.googleapis.com/maps/api/geocode/json?address='+stops[i]['NameEnding'].replace(' ','+')+'&key=AIzaSyBtclAh5sBEWXlB0iWhprHqVCVlmmQeGDQ';
-            current =  JSON.parse(httpGet(html))['results'][0]['geometry']['location'];
-            
-            coordList.push([last,current]);
-
-            last = current;
-              //Do something
-          }
-
-          console.log(coordList);
-          initMap();
-
-        }
-      }
-
-      let vm = new Vue({ el: '#container', data: data, watch: watch, computed: computed, methods: methods })
+      let vm = new Vue({ el: '#container', data: data, computed: computed, methods: methods })
     </script>
 
-
+    <div id="map"></div>
     <script>
       // This example adds a predefined symbol (an arrow) to a polyline.
       // Setting offset to 100% places the arrow at the end of the line.
 
       function initMap() {
         var map = new google.maps.Map(document.getElementById('map'), {
-          zoom: 5,
-          center: originPos,
+          zoom: 6,
+          center: {lat: 20.291, lng: 153.027},
           mapTypeId: 'terrain'
         });
 
@@ -234,37 +191,26 @@
         };
 
         // Create the polyline and add the symbol via the 'icons' property.
-        
-        var line = [];
-        var arrayLength = coordList.length;
-        for (var i = 0; i < arrayLength; i++) {
-            line.push(new google.maps.Polyline({
-          path: coordList[i],
+        var line = [new google.maps.Polyline({
+          path: [{lat: 22.291, lng: 153.027}, {lat: 18.291, lng: 153.027}],
           icons: [{
             icon: lineSymbol,
             offset: '100%'
           }],
           map: map
-        }));
-        } 
-
-        var circle = new google.maps.Circle({
-            strokeColor: '#FF0000',
-            strokeOpacity: 0.8,
-            strokeWeight: 2,
-            fillColor: '#FF0000',
-            fillOpacity: 0.35,
-            map: map,
-            center: originPos,
-            radius: 50000
-          });
-
+        }),new google.maps.Polyline({
+          path: [{lat: 0, lng: 0}, {lat: 90, lng: 153.027}],
+          icons: [{
+            icon: lineSymbol,
+            offset: '100%'
+          }],
+          map: map
+        })];
       }
     </script>
     <script async defer
-    src="https://maps.googleapis.com/maps/api/js?key=AIzaSyBtclAh5sBEWXlB0iWhprHqVCVlmmQeGDQ&callback=initMap"></script>
+    src="https://maps.googleapis.com/maps/api/js?key=AIzaSyBtclAh5sBEWXlB0iWhprHqVCVlmmQeGDQ&callback=initMap">
     </script>
-
 
   </body>
 </html>
