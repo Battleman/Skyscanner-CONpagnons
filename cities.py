@@ -74,7 +74,6 @@ def select_best_cities_fixed(image, number):
     return select_best_cities_from_image(image, cities, number)
 
 
-
 def save_word_list(cities):
     ret = {}
     for city in cities:
@@ -108,8 +107,6 @@ def get_most_likely_cities_file(image, num, words_list = words_list):
         score = float(total) / float(len(words_list[city]))
         ret.append((city, score))
     return sorted(ret, key=lambda tup: tup[1], reverse=True)[:num]
-
-
 
 
 if __name__ == '__main__':
