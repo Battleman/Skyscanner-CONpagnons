@@ -18,7 +18,7 @@
   <body>
     <div class="container" id="container">
       <div class="row">
-        <h1>Your new voyage</h1>
+        <h1>Start a new journey</h1>
       </div>
 
       <div class="row">
@@ -60,6 +60,10 @@
         </form>
       </div>
 
+      <div class="alert alert-danger row" role="alert" v-if="alert">
+        {{ "{{ alert }}" }}
+      </div>
+
       <div class="row">
         <table class="col-8" v-if="stops.length > 0">
           <thead>
@@ -97,6 +101,7 @@
 
     <script>
       let data = {
+        alert: null,
         loading: false,
         airportSuggestions: [],
         form: {
@@ -135,11 +140,16 @@
           let url = '/walk/' + [airport, f.budget, f.fromDate, f.toDate, f.escaleLength].join('/')
           $.getJSON(url)
            .done((data) => {
-             data.forEach((stop) => stop.Price = stop.Price.toFixed(2))
-             this.stops = data
+             if (data.length == 0) {
+               this.alert = 'No journey found, try increasing the budget!'
+             } else {
+               data.forEach((stop) => stop.Price = stop.Price.toFixed(2))
+               this.stops = data
+             }
            })
            .always(() => this.loading = false)
 
+          this.alert = null
           this.loading = true
         }
       }
