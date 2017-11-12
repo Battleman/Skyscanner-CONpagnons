@@ -31,7 +31,7 @@ def find_arrival(from_code, to_code, outboundDate, cabinclass="Economy", inboudD
         print(waitstring, end='\r')
         stdout.flush()
         time.sleep(2)
-        print("PASS {}, status is {}, headers are {}\n\n\n".format(i, data.status_code, "data.headers"))
+        # print("PASS {}, status is {}, headers are {}\n\n\n".format(i, data.status_code, "data.headers"))
         data = requests.get("{}?apikey={}&sortType=price&sortOrder=asc".format(poll_address,token))
         time.sleep(2.5)
 
