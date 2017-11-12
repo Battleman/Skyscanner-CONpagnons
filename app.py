@@ -12,6 +12,7 @@ def index():
 def suggestAirport(needle):
     return jsonify(suggest_airport(needle))
 
-@app.route('/walk/<depart>/<int:budget>/<date>')
-def walk(depart, budget, date):
-    return jsonify(randomWalk(depart, budget, date))
+@app.route('/walk/<depart>/<int:budget>/<from_date>/<to_date>/<int:escale_length>')
+def walk(depart, budget, from_date, to_date, escale_length):
+    return jsonify(randomWalk(depart, budget, from_date, dayspercity=escale_length))
+
