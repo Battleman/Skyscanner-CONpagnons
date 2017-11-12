@@ -152,7 +152,7 @@ def get_most_likely_cities_file(image, file, num):
 
 
 beach = 'https://media-cdn.tripadvisor.com/media/photo-s/0e/85/48/e6/seven-mile-beach-grand.jpg'
-counts = get_most_likely_cities_file(beach, 'capitals_wikipedia.bin')
+counts = get_most_likely_cities_file(beach, 'capitals_wikipedia.bin', 5)
 
 
 
