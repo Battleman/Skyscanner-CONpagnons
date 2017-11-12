@@ -1,4 +1,4 @@
-def fast_getter(depart, budget, date, country = 'CH' , currency =  'CHF', locale = 'en-GB', dayspercity=2):
+def fast_getter(depart, budget, date, country = 'CH' , currency =  'CHF', locale = 'en-GB', dayspercity=2, marge=0):
     destlist=[]
     price=0
     fromcode=depart
@@ -28,8 +28,8 @@ def fast_getter(depart, budget, date, country = 'CH' , currency =  'CHF', locale
     print("Trying to go home.....\n")
     while (not canGoHome) : #come back until you can go home
         position = destlist[-1]['CodeArrival']
-        print("Going from",position,"to",depart,"with budget",current_budget,"at",currdate)
-        (canGoHome , goHome)  = chooseDestination (position , current_budget , currdate , country=country  , currency=currency , locale=locale , destination=depart )
+        print("Going from",position,"to",depart,"with budget",current_budget,"(adjusted to",current_budget+budget*marge,") at", currdate)
+        (canGoHome , goHome)  = chooseDestination (position , current_budget+budget*marge , currdate , country=country  , currency=currency , locale=locale , destination=depart )
         if ( canGoHome) :
 #             goHome = find_arrival(position , depart , currentDate)[0]
 #             if ( currentBudget < goHomeCache['MinPrice'] ) :
