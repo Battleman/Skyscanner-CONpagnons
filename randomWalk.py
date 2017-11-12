@@ -12,7 +12,6 @@ def toDate (date) :
 def chooseDestination (depart , budget , dateBegin  , dateEnd , dayspercity , country = 'CH' , currency =  'CHF', locale = 'en-GB' , destination = 'anywhere' ) :
     url = 'http://partners.api.skyscanner.net/apiservices/browsequotes/v1.0/'+str(country)+'/'+str(currency)+'/'+str(locale)+'/'+str(depart)+'/'+str(destination)+'/'+str(dateBegin)+'/?apiKey=ha712564909427747796218296388326'
 
-
     r = requests.get(url)
     rjson = r.json()
 
@@ -20,7 +19,7 @@ def chooseDestination (depart , budget , dateBegin  , dateEnd , dayspercity , co
 
     if(trips == []) :
         return False , []
-    
+
     price = budget + 1
     count = 0
     maxIter = len(trips)*5
@@ -30,10 +29,6 @@ def chooseDestination (depart , budget , dateBegin  , dateEnd , dayspercity , co
 
     coeffDivid = int( max (  ((end - d1).days) , 0 )  / dayspercity) + 1
     
-
-       
-
-
     while (price > min(budget,budget / coeffDivid *1.25 )    ) :
         goodTrip = (trips[randrange(len(trips))])
         price = goodTrip['MinPrice']
@@ -44,7 +39,7 @@ def chooseDestination (depart , budget , dateBegin  , dateEnd , dayspercity , co
             if (coeffDivid == 0):
                 #print('error')
                 return False ,[]
-           
+
 
     arrived = goodTrip['OutboundLeg']['DestinationId']
 
@@ -68,7 +63,7 @@ def randomStep (depart , budget , dateBegin , dateEnd , dayspercity, country = '
 
 
     if (keepGoing) :
-        
+
         goodTrip['arrivalTime'] = str(goodTrip['OutboundLeg']['DepartureDate'])
 
         res = find_arrival(depart , goodTrip['arrived']['IataCode'], dateBegin)
@@ -107,7 +102,7 @@ def randomWalk (depart , budget , dateBegin , dateEnd , dayspercity=2 , country 
         keepGoing = False
         count = 0
         notSoGood = []
-        
+
 
 
         (keepGoing , tryStepList) =  randomStep (position , currentBudget , currentDate , dateEnd , dayspercity, country  , currency , locale  )
@@ -124,7 +119,7 @@ def randomWalk (depart , budget , dateBegin , dateEnd , dayspercity=2 , country 
     canGoHome  = False
 
     print("Trying to go home.....\n")
-    
+
 
     while (not canGoHome) :
         currentDate = dateIncrease(res[-1]['ArrivalTime'][:10],dayspercity)
@@ -153,6 +148,4 @@ if __name__ == '__main__':
     truc = randomWalk('CDG', 1000, '2017-12-12', '2017-12-27' ,  dayspercity=4)
     print("\n\n")
     for i in truc:
-        print(i)    
-
-
+        print(i)
