@@ -58,7 +58,7 @@ def randomStep (depart , budget , date , country = 'CH' , currency =  'CHF', loc
 
         for elem in res :
 
-            elem['nameEnding'] = goodTrip['arrived']['CityName']
+            elem['NameEnding'] = goodTrip['arrived']['CityName']
 
         return True , res
     else :
@@ -108,12 +108,13 @@ def randomWalk (depart , budget , date , country = 'CH' , currency =  'CHF', loc
     print("Trying to go home.....\n")
 
     while (not canGoHome) :
-        (canGoHome , goHome)  = chooseDestination (position , currentBudget , currentDate , country  , currency , locale , depart )
+        (canGoHome , goHomeCache)  = chooseDestination (position , currentBudget , currentDate , country  , currency , locale , depart )
         if ( canGoHome) :
             goHome = find_arrival(position , depart , currentDate)[0]
             if ( currentBudget < goHome['Price'] ) :
                 canGoHome = False
             else :
+                goHome ['NameEnding'] = goHomeCache['arrived']['CityName']
                 res += [goHome]
 
 
