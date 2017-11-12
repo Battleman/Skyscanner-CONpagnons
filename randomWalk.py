@@ -3,7 +3,7 @@ import json
 from random import randrange
 from olivier import find_arrival
 import datetime
-
+from sys import stdout
 def randomStep (depart , budget , date , country = 'CH' , currency =  'CHF', locale = 'en-GB') :
 
     url = 'http://partners.api.skyscanner.net/apiservices/browsequotes/v1.0/'+str(country)+'/'+str(currency)+'/'+str(locale)+'/'+str(depart)+'/anywhere/'+str(date)+'/?apiKey=ha712564909427747796218296388326'
@@ -15,7 +15,6 @@ def randomStep (depart , budget , date , country = 'CH' , currency =  'CHF', loc
     price = budget + 1
     count = 0
     maxIter = len(trips)*5
-
     while (price > budget ) :
         goodTrip = (trips[randrange(len(trips))])
         price = goodTrip['MinPrice']
@@ -28,7 +27,7 @@ def randomStep (depart , budget , date , country = 'CH' , currency =  'CHF', loc
     for place in rjson["Places"] :
         if (place['PlaceId'] == arrived) :
             goodTrip['arrived'] = place
-       
+
 
     goodTrip['arrivalTime'] = str(goodTrip['OutboundLeg']['DepartureDate'])
 
