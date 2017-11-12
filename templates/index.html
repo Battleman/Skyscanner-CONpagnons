@@ -1,0 +1,166 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <title>Hello, world!</title>
+    <!-- Required meta tags -->
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+
+    <!-- Bootstrap CSS -->
+    <link href="https://maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css" rel="stylesheet" integrity="sha384-wvfXpqpZZVQGK6TAh5PVlGOfQNHSoD2xbE+QkPxCAFlNEevoEH3Sl0sibVcOQVnN" crossorigin="anonymous">
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-beta.2/css/bootstrap.min.css" integrity="sha384-PsH8R72JQ3SOdhVi3uxftmaW6Vc51MKb0q5P2rRUpPvrszuE4W1povHYgTpBfshb" crossorigin="anonymous">
+    <style>
+      tbody > tr:last-child { font-style: italic; }
+      th:nth-child(3), td:nth-child(3) { text-align: right; }
+      th:nth-child(4), td:nth-child(4) { text-align: center; }
+    </style>
+  </head>
+  <body>
+    <div class="container" id="container">
+      <div class="row">
+        <h1>Start a new journey</h1>
+      </div>
+
+      <div class="row">
+        <form class="form-inline" v-on:submit.prevent="submitForm">
+          <label class="sr-only" for="start-airport">Departure from</label>
+          <input list="airportSuggestions" type="text" v-model="form.startAirport" v-on:input="startChange" class="form-control mr-2" id="start-airport" placeholder="Departure from" autocomplete="off" required>
+          <datalist id="airportSuggestions">
+            <option v-for="airport in airportSuggestions" v-bind:value="airport.PlaceName">
+          </datalist>
+
+          <label class="sr-only" for="budget">Budget</label>
+          <div class="input-group mr-2 col-2" style="padding:0">
+            <input type="number" v-model="form.budget" class="form-control" id="budget" placeholder="Budget" required>
+            <div class="input-group-addon">CHF</div>
+          </div>
+
+          <label class="sr-only" for="from-date">From:</label>
+          <input type="date" v-model="form.fromDate" class="form-control mr-2" id="from-date" placeholder="From" required>
+
+          <label class="sr-only" for="to-date">To:</label>
+          <input type="date" v-model="form.toDate" class="form-control mr-2" id="to-date" placeholder="To" required>
+
+          <label class="sr-only" for="escale-length">Escale length</label>
+          <div class="input-group mr-2 col-2" style="padding:0">
+            <input type="number" min="2" v-model="form.escaleLength" class="form-control" id="escale-length" placeholder="Escale length" required>
+            <div class="input-group-addon">Days</div>
+          </div>
+
+          <!--
+          <label class="sr-only" for="to-date">From:</label>
+          <input type="date" v-model="form.toDate" class="form-control mr-2" id="to-date" placeholder="To" required>
+          -->
+
+          <button type="submit" class="btn btn-primary">
+            <i class="fa fa-circle-o-notch fa-spin fa-fw" v-if="loading"></i>
+            <span class="sr-only">Loading...</span>
+            Submit
+          </button>
+        </form>
+      </div>
+
+      <div class="alert alert-danger row" role="alert" v-if="alert">
+        {{ "{{ alert }}" }}
+      </div>
+
+      <div class="row">
+        <table class="col-8" v-if="stops.length > 0">
+          <thead>
+            <tr>
+              <th>City</th>
+              <th>Arrival time</th>
+              <th>Price</th>
+              <th></th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr v-for="stop in stops">
+              <td>{{ "{{ stop.NameEnding }}" }}</td>
+              <td>{{ "{{ stop.ArrivalTime.replace('T', ' at ') }}" }}</td>
+              <td>{{ "{{ stop.Price }}" }}&nbsp;CHF</td>
+              <td><a target="_blank" v-bind:href="stop.DeepLink">Book it!</a></td>
+            </tr>
+            <tr>
+              <td></td>
+              <td>Total</td>
+              <td>{{ "{{ totalPrice }}" }}&nbsp;CHF</td>
+              <td></td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- Optional JavaScript -->
+    <!-- jQuery first, then Popper.js, then Bootstrap JS -->
+    <script src="https://code.jquery.com/jquery-3.2.1.min.js" integrity="sha384-xBuQ/xzmlsLoJpyjoggmTEz8OWUFM0/RC5BsqQBDX2v5cMvDHcMakNTNrHIW2I5f" crossorigin="anonymous" crossorigin="anonymous"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.3/umd/popper.min.js" integrity="sha384-vFJXuSJphROIrBnz7yo7oB41mKfc8JzQZiCq4NCceLEaO4IHwicKwpJf9c9IpFgh" crossorigin="anonymous"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-beta.2/js/bootstrap.min.js" integrity="sha384-alpBpkh1PFOepccYVYDB4do5UnbKysX5WZXm3XxPqe5iKTfUKjNkCk9SaVuEZflJ" crossorigin="anonymous"></script>
+    <script src="https://unpkg.com/vue"></script>
+
+    <script>
+      let data = {
+        alert: null,
+        loading: false,
+        airportSuggestions: [],
+        form: {
+          startAirport: null,
+          budget: null,
+          fromDate: null,
+          toDate: null,
+          escaleLength: 2
+        },
+        stops: []
+      }
+
+      let getAirport = () => {
+        let airports = data.airportSuggestions.filter((airport) => airport.PlaceName === data.form.startAirport)
+        return (airports.length !== 1) ? null : airports[0].PlaceId.split('-')[0]
+      }
+
+      var keyTimer = null
+      let methods = {
+        startChange: function (event) {
+          if (keyTimer) {
+            clearTimeout(keyTimer)
+            keyTimer = null
+          }
+
+          keyTimer = setTimeout(() =>
+            $.getJSON('/suggestAirport/' + this.form.startAirport)
+             .done((data) => this.airportSuggestions = data), 200)
+
+        },
+        submitForm: function (event) {
+          let airport = getAirport()
+          if (airport == null) return
+
+          let f = this.form
+          let url = '/walk/' + [airport, f.budget, f.fromDate, f.toDate, f.escaleLength].join('/')
+          $.getJSON(url)
+           .done((data) => {
+             if (data.length == 0) {
+               this.alert = 'No journey found, try increasing the budget!'
+             } else {
+               data.forEach((stop) => stop.Price = stop.Price.toFixed(2))
+               this.stops = data
+             }
+           })
+           .always(() => this.loading = false)
+
+          this.alert = null
+          this.loading = true
+        }
+      }
+
+      let computed = {
+        totalPrice: function () {
+          return this.stops.reduce((acc, stop) => acc + parseFloat(stop.Price), 0.0).toFixed(2)
+        }
+      }
+
+      let vm = new Vue({ el: '#container', data: data, computed: computed, methods: methods })
+    </script>
+  </body>
+</html>

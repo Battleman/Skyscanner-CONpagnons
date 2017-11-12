@@ -49,9 +49,18 @@ def randomStep (depart , budget , date , country = 'CH' , currency =  'CHF', loc
 
     (keepGoing , goodTrip) = chooseDestination(depart , budget , date , country = 'CH' , currency =  'CHF', locale = 'en-GB' )
 
-    if (keepGoing) :
 
-        return True , find_arrival(depart , goodTrip['arrived']['IataCode'], date)
+    if (keepGoing) :
+        
+        goodTrip['arrivalTime'] = str(goodTrip['OutboundLeg']['DepartureDate'])
+
+        res = find_arrival(depart , goodTrip['arrived']['IataCode'], date)
+
+        for elem in res :
+
+            elem['NameEnding'] = goodTrip['arrived']['CityName']
+
+        return True , res
     else :
         return False , []
 
@@ -79,48 +88,52 @@ def randomWalk (depart , budget , date , country = 'CH' , currency =  'CHF', loc
         count = 0
         notSoGood = []
 
-        while (not keepGoing) :
-            count += 1
+        
 
 
-            #print(count , "count" , len(res))
-            (keepGoing , tryStepList) =  randomStep (position , currentBudget , currentDate , country  , currency , locale  )
+        #print(count , "count" , len(res))
+        (keepGoing , tryStepList) =  randomStep (position , currentBudget , currentDate , country  , currency , locale  )
 
+        if (keepGoing) :
+            tryStep = tryStepList[0]
 
-            if (keepGoing) :
-                tryStep = tryStepList[0]
+            position = tryStep['CodeEnding']
+            currentBudget -= tryStep['Price']
+            currentDate = dateIncrease(tryStep['ArrivalTime'][:10], dayspercity)
 
-                position = tryStep['CodeEnding']
-                currentBudget -= tryStep['Price']
-                currentDate = dateIncrease(tryStep['ArrivalTime'][:10], dayspercity)
-
-                res += [tryStep]
+            res += [tryStep]
 
     canGoHome  = False
 
     print("Trying to go home.....\n")
 
     while (not canGoHome) :
-        (canGoHome , goHome)  = chooseDestination (position , currentBudget , currentDate , country  , currency , locale , depart )
+        (canGoHome , goHomeCache)  = chooseDestination (position , currentBudget , currentDate , country  , currency , locale , depart )
         if ( canGoHome) :
             goHome = find_arrival(position , depart , currentDate)[0]
             if ( currentBudget < goHome['Price'] ) :
                 canGoHome = False
             else :
+                goHome ['NameEnding'] = goHomeCache['arrived']['CityName']
                 res += [goHome]
 
-        print(canGoHome , not canGoHome)
 
         if (not canGoHome) :
-            print(res[-1])
-            position = res[-1]['CodeBeginning']
-            currentBudget += res[-1]['Price']
-            res = res [ : -1]
+            if (res != []) :
+                position = res[-1]['CodeBeginning']
+                currentBudget += res[-1]['Price']
+                res = res [ : -1]
+            else :
+                return []
 
 
     return res
 
-truc = randomWalk('CDG', 2000, '2017-12-12', dayspercity=4)
-print("\n\n")
-for i in truc:
-    print(i)
+
+if __name__ == '__main__':
+    truc = randomWalk('CDG', 10, '2017-12-12', dayspercity=4)
+    print("\n\n")
+    for i in truc:
+        print(i)    
+
+
