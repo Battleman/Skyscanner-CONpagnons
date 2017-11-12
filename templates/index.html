@@ -36,10 +36,10 @@
           </div>
 
           <label class="sr-only" for="from-date">From:</label>
-          <input type="date" v-model="form.fromDate" class="form-control mr-2" id="from-date" placeholder="From" required>
+          <input type="date" v-model="form.fromDate" v-bind:min="today" class="form-control mr-2" id="from-date" placeholder="From" required>
 
           <label class="sr-only" for="to-date">To:</label>
-          <input type="date" v-model="form.toDate" class="form-control mr-2" id="to-date" placeholder="To" required>
+          <input type="date" v-model="form.toDate" v-bind:min="form.fromDate" class="form-control mr-2" id="to-date" placeholder="To" required>
 
           <label class="sr-only" for="escale-length">Escale length</label>
           <div class="input-group mr-2 col-2" style="padding:0">
@@ -157,7 +157,8 @@
       let computed = {
         totalPrice: function () {
           return this.stops.reduce((acc, stop) => acc + parseFloat(stop.Price), 0.0).toFixed(2)
-        }
+        },
+        today: function () { return new Date().toISOString().split('T')[0] }
       }
 
       let vm = new Vue({ el: '#container', data: data, computed: computed, methods: methods })
